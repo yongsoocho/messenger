@@ -8,7 +8,7 @@ const users = [
 
 const dummyMessages = {
   3: [
-    { from: "Sasha", text: "Ok everyone, I made the reservation!" },
+    { from: "me", text: "Ok everyone, I made the reservation!" },
     { from: "Lisa", text: "Yes! Thanks for doing that." },
     { from: "Peter", text: "Let's meet at my house Saturday morning. How’s 9?" },
     { from: "Sasha", text: "Works for me!" },
@@ -33,9 +33,12 @@ export default function MainPage() {
   return (
     <div className="flex h-screen font-sans">
       {/* Sidebar */}
-      <div className="w-72 border-r bg-white p-4 overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Recent</h2>
-        <input className="input input-bordered w-full mb-4" placeholder="Search for people and groups" />
+      <div className="w-72 bg-white p-4 pt-2 border-r border-gray-300">
+		  <div className="flex items-center h-6 mb-4">
+			  <img src="/messenger.png" className="h-6 mr-1" />
+			  <p className="text-xl font-bold text-center">Messenger</p>
+		  </div>
+        <input className="input input-bordered w-full mb-2" placeholder="Search for people and groups" />
         {users.map((user) => (
           <div
             key={user.id}
@@ -60,16 +63,16 @@ export default function MainPage() {
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col bg-gray-50">
-        <div className="border-b p-4 font-semibold text-lg">{selectedUser.name}</div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="bg-[radial-gradient(circle,_#00b2ff_0%,_#5f52ff_35%,_#c840f6_65%,_#ff2a8a_100%)] p-2 box-border font-semibold text-md text-white text-center">{selectedUser.name}</div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-2 overflow-y-auto h-50">
           {messages[selectedUser.id]?.map((msg, idx) => (
             <div key={idx} className={`chat ${msg.from === "me" ? "chat-end" : "chat-start"}`}>
               <div className="chat-header text-xs text-gray-500 mb-1">{msg.from}</div>
-              <div className="chat-bubble chat-bubble-neutral max-w-sm">{msg.text}</div>
+              <div className={`chat-bubble chat-bubble-neutral max-w-sm rounded-xl ${msg.from === "me" ? "bg-blue-500" : "bg-gray-200 text-black"}`}>{msg.text}</div>
             </div>
           ))}
         </div>
-        <div className="border-t p-3 flex items-center gap-2">
+        <div className="bg-white p-3 flex items-center gap-2">
           <button className="btn btn-sm">Aa</button>
           <button className="btn btn-sm">📷</button>
           <button className="btn btn-sm">GIF</button>
