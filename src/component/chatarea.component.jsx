@@ -87,7 +87,7 @@ const ChatArea = ({}) => {
 							clip-rule="evenodd"
 						/>
 					</svg>
-				</button>{" "}
+				</button>
 				<input
 					className="input input-bordered w-full"
 					value={() => {
