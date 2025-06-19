@@ -1,42 +1,45 @@
-import { createContext, useEffect, useState } from "react";
-import { axios } from "axios";
+import { createContext, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useState(null);
 	const [user, setUser] = useState(null);
-	const [isLoading, setIsLoading] = useState(false);
+	const [loading, setLoading] = useState(false);
+
+	const navi = useNavigate();
 
 	const login = async ({ email, password }) => {
-		setIsLoading(true);
+		setLoading(true);
 		try {
 			const { data } = await axios.post(
-				`http://localhost:8080/user/login`,
-				{
-					email,
-					password,
-				},
+				"http://localhost:8080/user/signin",
+				{ email, password },
 				{
 					withCredentials: true,
+					headers: {
+						"Content-Type": "application/json",
+					},
 				},
 			);
-			setUser(data);
 			setIsLoggedIn(true);
+			setUser(data);
+			navi("/");
 		} catch (error) {
 			console.error("Login failed:", error);
-			setUser(null);
 			setIsLoggedIn(false);
+			setUser(null);
 		} finally {
-			setIsLoading(false);
+			setLoading(false);
 		}
 	};
-
 	const logout = async () => {
-		setIsLoading(true);
+		setLoading(true);
 		try {
 			await axios.post(
-				`http://localhost:8080/user/logout`,
+				"http://localhost:8080/user/logout",
 				{},
 				{
 					withCredentials: true,
@@ -47,45 +50,23 @@ export const AuthProvider = ({ children }) => {
 		} finally {
 			setUser(null);
 			setIsLoggedIn(false);
-			setIsLoading(false);
+			setLoading(false);
+			navi("/signin");
 		}
 	};
 
-	useEffect(() => {
-		const controller = new AbortController();
-
-		const initAuth = async () => {
-			setIsLoading(true);
-			try {
-				const { data } = await axios.get(
-					`http://localhost:8080/user/profile`,
-					{
-						withCredentials: true,
-					},
-					{
-						signal: controller.signal,
-					},
-				);
-				setUser(data);
-				setIsLoggedIn(true);
-			} catch (error) {
-				console.error("Error during initial authentication check:", error);
-				setUser(null);
-				setIsLoggedIn(false);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		initAuth();
-
-		return () => {
-			controller.abort();
-		};
-	});
-
 	return (
 		<AuthContext.Provider
-			value={{ isLoggedIn, login, logout, user, isLoading }}
+			value={{
+				isLoggedIn,
+				setIsLoggedIn,
+				login,
+				logout,
+				user,
+				loading,
+				setUser,
+				setLoading,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>
