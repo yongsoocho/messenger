@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
 import LoginBox from "../component/LoginBox.component";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth.context";
+import { useContext, useState } from "react";
 
 const SigninPage = () => {
 	const navi = useNavigate();
+
 	const { login } = useContext(AuthContext);
 
 	const [email, setEmail] = useState("");

@@ -6,8 +6,8 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 	const [isLoggedIn, setIsLoggedIn] = useState(null);
-	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(false);
+	const [user, setUser] = useState(null);
 
 	const navi = useNavigate();
 
@@ -16,7 +16,10 @@ export const AuthProvider = ({ children }) => {
 		try {
 			const { data } = await axios.post(
 				"http://localhost:8080/user/signin",
-				{ email, password },
+				{
+					email,
+					password,
+				},
 				{
 					withCredentials: true,
 					headers: {
@@ -30,6 +33,7 @@ export const AuthProvider = ({ children }) => {
 		} catch (error) {
 			console.error("Login failed:", error);
 			setIsLoggedIn(false);
+			setLoading(false);
 			setUser(null);
 		} finally {
 			setLoading(false);
@@ -59,13 +63,13 @@ export const AuthProvider = ({ children }) => {
 		<AuthContext.Provider
 			value={{
 				isLoggedIn,
-				setIsLoggedIn,
 				login,
 				logout,
-				user,
 				loading,
-				setUser,
+				user,
 				setLoading,
+				setUser,
+				setIsLoggedIn,
 			}}
 		>
 			{children}
