@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }) => {
 		} catch (error) {
 			console.error("Login failed:", error);
 			setIsLoggedIn(false);
-			setLoading(false);
 			setUser(null);
 		} finally {
 			setLoading(false);
@@ -52,10 +51,37 @@ export const AuthProvider = ({ children }) => {
 		} catch (error) {
 			console.error("Logout failed:", error);
 		} finally {
+			setIsLoggedIn(null);
 			setUser(null);
-			setIsLoggedIn(false);
 			setLoading(false);
 			navi("/signin");
+		}
+	};
+	const signup = async ({ email, password }) => {
+		setLoading(true);
+		try {
+			const { data } = await axios.post(
+				"http://localhost:8080/user/signup",
+				{
+					email,
+					password,
+				},
+				{
+					withCredentials: true,
+					headers: {
+						"Content-Type": "application/json",
+					},
+				},
+			);
+			setIsLoggedIn(true);
+			setUser(data);
+			navi("/");
+		} catch (error) {
+			console.error("Login failed:", error);
+			setIsLoggedIn(false);
+			setUser(null);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -63,13 +89,14 @@ export const AuthProvider = ({ children }) => {
 		<AuthContext.Provider
 			value={{
 				isLoggedIn,
-				login,
-				logout,
 				loading,
 				user,
+				setIsLoggedIn,
 				setLoading,
 				setUser,
-				setIsLoggedIn,
+				login,
+				logout,
+				signup,
 			}}
 		>
 			{children}

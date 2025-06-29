@@ -108,8 +108,8 @@ export default function MainPage() {
 
 					<div>
 						<button
-							className="btn bg-blue-500 text-white rounded-xl"
-							onClick={() => logout()}
+							className="btn  bg-blue-500 text-white rounded-xl"
+							onClick={logout}
 						>
 							logout
 							<svg

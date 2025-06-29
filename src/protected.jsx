@@ -4,18 +4,20 @@ import { Navigate } from "react-router-dom";
 import axios from "axios";
 
 const Protected = ({ children }) => {
-	const { isLoggedIn, setLoading, setUser, setIsLoggedIn, loading } =
+	const { loading, isLoggedIn, setLoading, setUser, setIsLoggedIn } =
 		useContext(AuthContext);
 
 	useEffect(() => {
-		if (isLoggedIn !== null) return;
+		if (isLoggedIn !== null) {
+			return;
+		}
 
 		setLoading(true);
 		const controller = new AbortController();
 
 		const checkAuth = async () => {
 			try {
-				const { data } = await axios("http://localhost:8080/user/profile", {
+				const { data } = await axios.get("http://localhost:8080/user/profile", {
 					withCredentials: true,
 					signal: controller.signal,
 				});
@@ -23,7 +25,7 @@ const Protected = ({ children }) => {
 				setIsLoggedIn(true);
 			} catch (error) {
 				if (axios.isCancel(error)) {
-					console.log("Request cancelled:", error.message);
+					console.log("Request canceled:", error.message);
 					return;
 				}
 
@@ -40,7 +42,7 @@ const Protected = ({ children }) => {
 		return () => {
 			controller.abort();
 		};
-	}, []);
+	});
 
 	if (loading || isLoggedIn === null) {
 		return <div>Loading...</div>;

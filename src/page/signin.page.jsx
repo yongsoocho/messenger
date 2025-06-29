@@ -4,12 +4,12 @@ import { AuthContext } from "../context/auth.context";
 import { useContext, useState } from "react";
 
 const SigninPage = () => {
-	const navi = useNavigate();
-
 	const { login } = useContext(AuthContext);
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+
+	const navi = useNavigate();
 
 	const onClickSignUp = () => {
 		navi("/signup");
@@ -41,7 +41,10 @@ const SigninPage = () => {
 						/>
 					</div>
 					<div>
-						<button className="w-full btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl bg-blue-500 text-white mb-2">
+						<button
+							className="w-full btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl bg-blue-500 text-white mb-2"
+							type="submit"
+						>
 							sign in
 						</button>
 					</div>
@@ -49,7 +52,7 @@ const SigninPage = () => {
 						<button
 							className="link text-blue-500"
 							onClick={onClickSignUp}
-							type="submit"
+							type="button"
 						>
 							sign up for facebook
 						</button>
