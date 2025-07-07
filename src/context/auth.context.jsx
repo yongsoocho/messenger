@@ -54,7 +54,6 @@ export const AuthProvider = ({ children }) => {
 			setIsLoggedIn(null);
 			setUser(null);
 			setLoading(false);
-			navi("/signin");
 		}
 	};
 	const signup = async ({ email, password }) => {
