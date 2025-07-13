@@ -8,7 +8,6 @@ import { AuthContext } from "./context/auth.context";
 
 function App() {
 	const { loading } = useContext(AuthContext);
-	let test;
 
 	if (loading) {
 		return (
