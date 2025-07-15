@@ -12,7 +12,7 @@ export default function MainPage() {
 	const [input, setInput] = useState("");
 	const fileInputRef = useRef(null);
 	const { logout, user } = useContext(AuthContext);
-	const { rooms, fetchRooms, addRoom, selectedUser, setSelectedUser } =
+	const { rooms, fetchRooms, addRoom, selectedRoom, setSelectedRoom } =
 		useContext(RoomContext);
 	const [email, setEmail] = useState("");
 
@@ -59,11 +59,11 @@ export default function MainPage() {
 							key={room.id}
 							onClick={() =>
 								user.email === room.fromUser
-									? setSelectedUser(room.toUser.email)
-									: setSelectedUser(room.fromUser.email)
+									? setSelectedRoom({ id: room.id, email: room.toUser.email })
+									: setSelectedRoom({ id: room.id, email: room.fromUser.email })
 							}
 							className={`flex items-center p-2 rounded cursor-pointer hover:bg-gray-100 transition ${
-								selectedUser === user.email ? "bg-gray-100" : ""
+								selectedRoom === user.email ? "bg-gray-100" : ""
 							}`}
 						>
 							<div className="avatar mr-3">
@@ -102,18 +102,18 @@ export default function MainPage() {
 			<div className="flex-1 flex flex-col bg-gray-50">
 				{/* ─── 여기를 수정 ─── */}
 				<div className="bg-white shadow-sm p-2 flex items-center border-b border-gray-200">
-					{selectedUser !== null ? (
+					{Object.keys(selectedRoom).length !== 0 ? (
 						<>
 							<div className="avatar mr-1">
 								<div className="w-6 h-6 rounded-full overflow-hidden">
 									<img
 										src={"https://i.pravatar.cc/150?u=lisa"}
-										alt={selectedUser}
+										alt={selectedRoom.id}
 									/>
 								</div>
 							</div>
 							<div className="flex-1">
-								<p className="text-xs font-semibold">{selectedUser}</p>
+								<p className="text-xs font-semibold">{selectedRoom.email}</p>
 							</div>
 						</>
 					) : null}

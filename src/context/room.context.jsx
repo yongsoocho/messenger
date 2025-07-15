@@ -8,7 +8,7 @@ export const RoomContext = createContext();
 
 export const RoomProvider = ({ children }) => {
 	const [rooms, setRoom] = useState(null);
-	const [selectedUser, setSelectedUser] = useState(null);
+	const [selectedRoom, setSelectedRoom] = useState({});
 	const [messages, setMessages] = useState({});
 
 	// 방 가져오기
@@ -27,19 +27,22 @@ export const RoomProvider = ({ children }) => {
 
 	// 채팅방 메세지 가져오기
 	useEffect(() => {
-		if (!selectedUser || !Object.keys(selectedUser).length) return;
+		if (!selectedRoom || !Object.keys(selectedRoom).length) return;
 
 		axios
-			.get(`http://localhost:8080/chat?roomId=${selectedUser?.id}`, {
+			.get(`http://localhost:8080/chat`, {
 				withCredentials: true,
+				params: {
+					roomId: selectedRoom.id,
+				},
 			})
 			.then((res) => {
 				setMessages((prev) => ({
 					...prev,
-					[selectedUser.id]: res.data,
+					[selectedRoom.id]: res.data,
 				}));
 			});
-	}, [selectedUser]);
+	}, [selectedRoom]);
 	//
 
 	const fetchRooms = async () => {
@@ -72,8 +75,8 @@ export const RoomProvider = ({ children }) => {
 				rooms,
 				fetchRooms,
 				addRoom,
-				selectedUser,
-				setSelectedUser,
+				selectedRoom,
+				setSelectedRoom,
 			}}
 		>
 			{children}
