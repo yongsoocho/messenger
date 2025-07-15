@@ -1,13 +1,15 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-
 import { io } from "socket.io-client";
-const socket = io("http://localhost:8080", { withCredentials: true });
 
 export const RoomContext = createContext();
 
+const socket = io("http://localhost:8080", {
+	withCredentials: true,
+});
+
 export const RoomProvider = ({ children }) => {
-	const [rooms, setRoom] = useState(null);
+	const [rooms, setRoom] = useState([]);
 	const [selectedRoom, setSelectedRoom] = useState({});
 	const [messages, setMessages] = useState({});
 
@@ -16,13 +18,15 @@ export const RoomProvider = ({ children }) => {
 		fetchRooms();
 	}, []);
 
-	// room 리스트 가져오고 socket join
+	// room 가져와서 socket join
 	useEffect(() => {
 		if (rooms && rooms.length > 0) {
 			rooms.forEach((room) => {
 				socket.emit("join", room.id);
 			});
 		}
+
+		return () => socket.off("join");
 	}, [rooms]);
 
 	// 채팅방 메세지 가져오기
@@ -32,27 +36,26 @@ export const RoomProvider = ({ children }) => {
 		axios
 			.get(`http://localhost:8080/chat`, {
 				withCredentials: true,
-				params: {
-					roomId: selectedRoom.id,
-				},
+				params: { roomId: selectedRoom.id },
 			})
 			.then((res) => {
-				setMessages((prev) => ({
-					...prev,
+				setMessages((prevMessages) => ({
+					...prevMessages,
 					[selectedRoom.id]: res.data,
 				}));
 			});
 	}, [selectedRoom]);
 
+	// 소켓 listen
 	useEffect(() => {
 		socket.on("message", (data) => {
-			setMessages((prev) => {
-				return {
-					...prev,
-					[data.roomId]: [...(prev[data.roomId] || []), data],
-				};
-			});
+			console.log(data);
+			setMessages((prevMessages) => ({
+				...prevMessages,
+				[data.roomId]: [...(prevMessages[data.roomId] || []), data],
+			}));
 		});
+
 		return () => socket.off("message");
 	}, []);
 
@@ -88,6 +91,7 @@ export const RoomProvider = ({ children }) => {
 				addRoom,
 				selectedRoom,
 				setSelectedRoom,
+				messages,
 			}}
 		>
 			{children}

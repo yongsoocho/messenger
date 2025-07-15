@@ -42,7 +42,7 @@ const Protected = ({ children }) => {
 		return () => {
 			controller.abort();
 		};
-	});
+	}, []);
 
 	if (loading || isLoggedIn === null) {
 		return <div>Loading...</div>;

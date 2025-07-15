@@ -13,8 +13,14 @@ export default function MainPage() {
 	const [input, setInput] = useState("");
 	const fileInputRef = useRef(null);
 	const { logout, user } = useContext(AuthContext);
-	const { rooms, fetchRooms, addRoom, selectedRoom, setSelectedRoom } =
-		useContext(RoomContext);
+	const {
+		rooms,
+		fetchRooms,
+		addRoom,
+		selectedRoom,
+		setSelectedRoom,
+		messages,
+	} = useContext(RoomContext);
 	const [email, setEmail] = useState("");
 
 	// const handleSend = () => {
@@ -33,8 +39,9 @@ export default function MainPage() {
 		}
 	});
 
-	const sendMessage = async (e) => {
+	const sendChat = async (e) => {
 		e.preventDefault();
+
 		if (!input) return;
 		await axios.post(
 			"http://localhost:8080/chat",
@@ -50,13 +57,14 @@ export default function MainPage() {
 	};
 
 	const sendImage = async (e) => {
-		e.preventDefault();
 		const file = e.target.files[0];
 		if (!file) return;
+
 		const formData = new FormData();
-		formData.append("image", file);
+		formData.append("chatimage", file);
 		formData.append("roomId", selectedRoom.id);
-		await axios.post("http://localhost:8080/chat/image", formData, {
+
+		await axios.post("http://localhost:8080/chat.image", formData, {
 			withCredentials: true,
 		});
 	};
@@ -88,8 +96,8 @@ export default function MainPage() {
 							key={room.id}
 							onClick={() =>
 								user.email === room.fromUser
-									? setSelectedRoom({ id: room.id, email: room.toUser.email })
-									: setSelectedRoom({ id: room.id, email: room.fromUser.email })
+									? setSelectedRoom({ id: room.id, email: room.fromUser.email })
+									: setSelectedRoom({ id: room.id, email: room.toUser.email })
 							}
 							className={`flex items-center p-2 rounded cursor-pointer hover:bg-gray-100 transition ${
 								selectedRoom === user.email ? "bg-gray-100" : ""
@@ -173,21 +181,28 @@ export default function MainPage() {
 				{/* ────────────────── */}
 
 				<div className="flex-1 overflow-y-auto p-4 space-y-2 overflow-y-auto h-50">
-					{/* {messages[selectedUser.id]?.map((msg, idx) => (
+					{messages[selectedRoom.id]?.map((msg) => (
 						<div
-							key={idx}
-							className={`chat ${msg.from === "me" ? "chat-end" : "chat-start"}`}
+							key={msg.id}
+							className={`chat ${msg.sender === user.email ? "chat-end" : "chat-start"}`}
 						>
 							<div className="chat-header text-xs text-gray-500 mb-1">
-								{msg.from}
+								{msg.sender === user.email ? null : selectedRoom.email}
 							</div>
-							<div
-								className={`chat-bubble chat-bubble-neutral max-w-sm rounded-xl ${msg.from === "me" ? "bg-blue-500" : "bg-gray-200 text-black"}`}
-							>
-								{msg.text}
-							</div>
+							{msg.type === "TEXT" ? (
+								<div
+									className={`chat-bubble chat-bubble-neutral max-w-sm rounded-xl ${msg.sender === user.email ? "bg-blue-500" : "bg-gray-200 text-black"}`}
+								>
+									{msg.content}
+								</div>
+							) : // <div
+							// 	className={`chat-bubble chat-bubble-neutral max-w-sm rounded-xl ${msg.sender === user.email ? "bg-blue-500" : "bg-gray-200 text-black"}`}
+							// >
+							// 	<img src={msg.content} />
+							// </div>
+							null}
 						</div>
-					))} */}
+					))}
 				</div>
 				<div className="bg-white p-3 flex items-center gap-2">
 					<input
@@ -203,10 +218,7 @@ export default function MainPage() {
 					>
 						📷
 					</button>
-					<form
-						onSubmit={sendMessage}
-						className="flex-1 flex items-center gap-2"
-					>
+					<form onSubmit={sendChat} className="flex-1 flex items-center gap-2">
 						<input
 							className="input input-bordered w-full"
 							value={input}
