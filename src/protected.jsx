@@ -12,8 +12,8 @@ const Protected = ({ children }) => {
 			return;
 		}
 
-		setLoading(true);
 		const controller = new AbortController();
+		setLoading(true);
 
 		const checkAuth = async () => {
 			try {
@@ -33,11 +33,12 @@ const Protected = ({ children }) => {
 				setUser(null);
 				setIsLoggedIn(false);
 			} finally {
-				setLoading(false);
+				// setLoading(false);
 			}
 		};
 
 		checkAuth();
+		setLoading(false);
 
 		return () => {
 			controller.abort();

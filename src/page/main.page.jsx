@@ -64,7 +64,7 @@ export default function MainPage() {
 		formData.append("chatimage", file);
 		formData.append("roomId", selectedRoom.id);
 
-		await axios.post("http://localhost:8080/chat.image", formData, {
+		await axios.post("http://localhost:8080/chat/image", formData, {
 			withCredentials: true,
 		});
 	};
@@ -195,12 +195,13 @@ export default function MainPage() {
 								>
 									{msg.content}
 								</div>
-							) : // <div
-							// 	className={`chat-bubble chat-bubble-neutral max-w-sm rounded-xl ${msg.sender === user.email ? "bg-blue-500" : "bg-gray-200 text-black"}`}
-							// >
-							// 	<img src={msg.content} />
-							// </div>
-							null}
+							) : (
+								<div
+									className={`chat-bubble chat-bubble-neutral max-w-sm rounded-xl ${msg.sender === user.email ? "bg-blue-500" : "bg-gray-200 text-black"}`}
+								>
+									<img src={msg.content} className="rounded-md w-60 h-auto" />
+								</div>
+							)}
 						</div>
 					))}
 				</div>
