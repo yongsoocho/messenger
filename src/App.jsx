@@ -5,6 +5,7 @@ import SignupPage from "./page/signup.page";
 import Protected from "./protected";
 import { useContext } from "react";
 import { AuthContext } from "./context/auth.context";
+import { RoomProvider } from "./context/room.context";
 
 function App() {
 	const { loading } = useContext(AuthContext);
@@ -23,9 +24,11 @@ function App() {
 				<Route
 					path="/"
 					element={
-						<Protected>
-							<MainPage />
-						</Protected>
+						<RoomProvider>
+							<Protected>
+								<MainPage />
+							</Protected>
+						</RoomProvider>
 					}
 				/>
 				<Route path="/signin" element={<SigninPage />} />

@@ -1,8 +1,8 @@
-import { createContext, use, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
 import { io } from "socket.io-client";
-const Socket = io("http://localhost:8080", { withCredentials: true });
+const socket = io("http://localhost:8080", { withCredentials: true });
 
 export const RoomContext = createContext();
 
@@ -20,7 +20,7 @@ export const RoomProvider = ({ children }) => {
 	useEffect(() => {
 		if (rooms && rooms.length > 0) {
 			rooms.forEach((room) => {
-				Socket.emit("join", room.id);
+				socket.emit("join", room.id);
 			});
 		}
 	}, [rooms]);
@@ -43,7 +43,18 @@ export const RoomProvider = ({ children }) => {
 				}));
 			});
 	}, [selectedRoom]);
-	//
+
+	useEffect(() => {
+		socket.on("message", (data) => {
+			setMessages((prev) => {
+				return {
+					...prev,
+					[data.roomId]: [...(prev[data.roomId] || []), data],
+				};
+			});
+		});
+		return () => socket.off("message");
+	}, []);
 
 	const fetchRooms = async () => {
 		try {

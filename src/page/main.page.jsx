@@ -4,6 +4,7 @@ import { RoomContext } from "../context/room.context";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko"; // 한국어
+import axios from "axios";
 
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -31,6 +32,34 @@ export default function MainPage() {
 			fetchRooms();
 		}
 	});
+
+	const sendMessage = async (e) => {
+		e.preventDefault();
+		if (!input) return;
+		await axios.post(
+			"http://localhost:8080/chat",
+			{
+				roomId: selectedRoom.id,
+				content: input,
+			},
+			{
+				withCredentials: true,
+			},
+		);
+		setInput("");
+	};
+
+	const sendImage = async (e) => {
+		e.preventDefault();
+		const file = e.target.files[0];
+		if (!file) return;
+		const formData = new FormData();
+		formData.append("image", file);
+		formData.append("roomId", selectedRoom.id);
+		await axios.post("http://localhost:8080/chat/image", formData, {
+			withCredentials: true,
+		});
+	};
 
 	return (
 		<div className="flex h-screen font-sans">
@@ -166,7 +195,7 @@ export default function MainPage() {
 						accept="image/*"
 						ref={fileInputRef}
 						style={{ display: "none" }}
-						onChange={(e) => console.log(e.target.files[0])}
+						onChange={sendImage}
 					/>
 					<button
 						className="btn btn-sm"
@@ -174,26 +203,32 @@ export default function MainPage() {
 					>
 						📷
 					</button>
-					<input
-						className="input input-bordered w-full"
-						value={input}
-						onChange={(e) => setInput(e.target.value)}
-						// onKeyDown={(e) => e.key === "Enter" && handleSend()}
-						placeholder="Type a message"
-					/>
-					<button
-						className="btn btn-sm btn-circle bg-blue-500 text-white"
-						// onClick={handleSend}
+					<form
+						onSubmit={sendMessage}
+						className="flex-1 flex items-center gap-2"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							className="size-5"
+						<input
+							className="input input-bordered w-full"
+							value={input}
+							onChange={(e) => setInput(e.target.value)}
+							// onKeyDown={(e) => e.key === "Enter" && handleSend()}
+							placeholder="Type a message"
+						/>
+						<button
+							className="btn btn-sm btn-circle bg-blue-500 text-white"
+							type="submit"
+							// onClick={handleSend}
 						>
-							<path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z" />
-						</svg>
-					</button>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								className="size-5"
+							>
+								<path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z" />
+							</svg>
+						</button>
+					</form>
 				</div>
 			</div>
 		</div>

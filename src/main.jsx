@@ -9,11 +9,9 @@ import { RoomProvider } from "./context/room.context.jsx";
 createRoot(document.getElementById("root")).render(
 	<StrictMode>
 		<BrowserRouter>
-			<RoomProvider>
-				<AuthProvider>
-					<App />
-				</AuthProvider>
-			</RoomProvider>
+			<AuthProvider>
+				<App />
+			</AuthProvider>
 		</BrowserRouter>
 	</StrictMode>,
 );
